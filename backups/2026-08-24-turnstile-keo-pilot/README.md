@@ -7,6 +7,7 @@ Files:
 - `include-index-index_form_inc.php.before` — live `/include/index/index_form_inc.php`
 - `local-ajax-add_project_form.php.before` — live `/local/ajax/add_project_form.php`
 - `include-index-index_form_inc.php.before-managed-fix` — pilot form immediately before switching the widget from Invisible to Managed mode
+- `local-ajax-add_project_form.php.before-config-path-fix` — handler immediately before correcting the server configuration path
 
 The Cloudflare secret key is intentionally not stored in this repository. The server file `/bitrix/php_interface/turnstile_config.php` did not exist before the pilot.
 

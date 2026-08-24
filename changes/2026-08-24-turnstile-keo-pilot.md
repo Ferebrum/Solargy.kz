@@ -41,6 +41,14 @@ Scope: only `https://solargy.kz/application/`.
 - Corrected the error-message and privacy-text layout and added the Turnstile error code to the browser console for diagnostics.
 - Verified the corrected page loads with the managed configuration and no console errors.
 
+## Server key path correction
+
+- The repeated test failure was caused by Bitrix creating `turnstile_config.php` as a directory and placing the protected PHP file inside it.
+- Verified the nested server file contains the exact Cloudflare secret without exposing it.
+- Updated the AJAX handler to load `/bitrix/php_interface/turnstile_config.php/turnstile_config.php`.
+- Saved the handler state before this correction in `local-ajax-add_project_form.php.before-config-path-fix` (commit `b22a0e9`).
+- Form wording does not affect Turnstile verification.
+
 ## Rollback
 
 1. Restore the two `.before` files to their original live paths.
