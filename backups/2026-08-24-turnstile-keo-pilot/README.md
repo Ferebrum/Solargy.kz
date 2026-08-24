@@ -7,6 +7,6 @@ Files:
 - `include-index-index_form_inc.php.before` — live `/include/index/index_form_inc.php`
 - `local-ajax-add_project_form.php.before` — live `/local/ajax/add_project_form.php`
 
-The Cloudflare secret key is intentionally not stored in this repository.
+The Cloudflare secret key is intentionally not stored in this repository. The server file `/bitrix/php_interface/turnstile_config.php` did not exist before the pilot.
 
 Rollback: restore both `.before` files to their original live paths and clear the Bitrix cache.
