@@ -22,7 +22,10 @@ Date: 2026-08-24
 ## Verification
 
 - The updated handler loads without a PHP fatal error and returns valid JSON on a read-only GET syntax check.
-- No additional test form was submitted after this change.
+- A subsequent test request confirmed successful end-to-end delivery to the client mailbox.
+- Confirmed sender: `sales@solargy.kz`.
+- Confirmed subject: `Заявка принята — Solargy Казахстан`.
+- Confirmed the HTML message contains the personalized greeting, submitted contact data, request summary, next steps, and contact buttons.
 
 ## Rollback
 
