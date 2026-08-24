@@ -32,6 +32,15 @@ Scope: only `https://solargy.kz/application/`.
 - No customer form was submitted during verification.
 - One unrelated existing console warning remains: Yandex Maps reports an invalid API key.
 
+## Managed-mode correction
+
+- The first authorized test attempt stopped at the client-side Turnstile check; no request was accepted or mailed.
+- Saved the pre-correction form source as `backups/2026-08-24-turnstile-keo-pilot/include-index-index_form_inc.php.before-managed-fix` in commit `b494e2e`.
+- Changed the Cloudflare widget from `Invisible` to the recommended `Managed` mode.
+- Configured the client widget with `appearance: interaction-only` and explicit execution. Normal visitors still see no checkbox; a challenge can appear only when Cloudflare requires interaction.
+- Corrected the error-message and privacy-text layout and added the Turnstile error code to the browser console for diagnostics.
+- Verified the corrected page loads with the managed configuration and no console errors.
+
 ## Rollback
 
 1. Restore the two `.before` files to their original live paths.
