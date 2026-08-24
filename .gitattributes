@@ -1,0 +1,4 @@
+# Preserve exact line endings of website backup files.
+backups/**/*.css -text
+backups/**/*.js -text
+backups/**/*.php -text
