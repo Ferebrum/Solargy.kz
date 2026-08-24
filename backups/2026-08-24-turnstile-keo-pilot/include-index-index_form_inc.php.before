@@ -1,0 +1,299 @@
+<? CModule::IncludeModule("form");?>
+<? $page = $arParams['PAGE']; ?>
+<section class="your-project-section" style="margin-bottom: 0;">
+  <div class="container">
+    <div id="project-form" class="js-form">
+
+
+<!--    --><?//
+//    $APPLICATION->IncludeComponent(
+//	"bitrix:form.result.new",
+//	"template",
+//	array(
+//		"CACHE_TIME" => "3600",
+//		"CACHE_TYPE" => "A",
+//		"CHAIN_ITEM_LINK" => "",
+//		"CHAIN_ITEM_TEXT" => "",
+//		"COMPONENT_TEMPLATE" => "template",
+//		"EDIT_URL" => "",
+//		"IGNORE_CUSTOM_TEMPLATE" => "N",
+//		"LIST_URL" => "",
+//		"SEF_MODE" => "N",
+//		"SUCCESS_URL" => "",
+//		"USE_EXTENDED_ERRORS" => "Y",
+//		"WEB_FORM_ID" => "6",
+//		"VARIABLE_ALIASES" => array(
+//			"WEB_FORM_ID" => "WEB_FORM_ID",
+//			"RESULT_ID" => "RESULT_ID",
+//		)
+//	),
+//	false
+//);
+//    ?>
+
+
+        <form name="add-project-form" id="add-project-form" class="project-form" enctype='multipart/form-data'>
+
+            <table class="no-table">
+                <tr>
+                    <td>
+                        <?$requestHeadingTag = $APPLICATION->GetCurDir() === "/application/" ? "h1" : "h2";?>
+                        <<?=$requestHeadingTag?> class="h1 color-primary">Оставить запрос на расчет КЕО</<?=$requestHeadingTag?>>
+                        <p class="text">
+                            Заполните форму ниже и наши специалисты свяжутся с вами для уточнения деталей и расчета стоимости работ по внедрению световодов в ваш проект
+                        </p>
+                    </td>
+                </tr>
+            </table>
+            <div class="project-form-wrapper">
+                <div class="form-table data-table">
+                    <div class="project-form-group-wrapper">
+                        <div class="project-form-group">
+                            <div class="project-form-field">
+                                <label for="form_text_18">Город<span>*</span></label>
+                                <input type="text" class="inputtext" name="city" placeholder="Астана" value="" id="form_text_18"
+                                       required>
+                                <span style="display: none" class="error-fld"
+                                      title="Поле обязательно для заполнения">Введите Ваш город</span>
+                            </div>
+
+                           <div class="project-form-field">
+                                <label for="form_text_26">Название организации<span>*</span></label>
+                                <input type="text" class="inputtext" name="organization" placeholder="ООО Организации" value="" id="form_text_26"
+                                       required>
+                                <span style="display: none" class="error-fld"
+                                      title="Поле обязательно для заполнения">Введите название Вашей организации</span>
+                            </div>
+
+                            <div class="project-form-field">
+                                <label for="form_text_16">ФИО<span>*</span></label>
+                                <input type="text" class="inputtext" name="name" placeholder="Петров Николай Иванович" value="" id="form_text_16"
+                                       required>
+                                <span style="display: none" class="error-fld"
+                                      title="Поле обязательно для заполнения">Введите Ваше ФИО</span>
+                            </div>
+
+                            <div class="project-form-field">
+                                <label for="form_text_16">Должность</label>
+                                <input type="text" class="inputtext" name="post" placeholder="Архитектор" value="" id="form_text_22" />
+                                <span style="display: none" class="error-fld"
+                                      title="Поле обязательно для заполнения">Введите Вашу должность</span>
+                            </div>
+
+                            <div class="project-form-field">
+                                <label for="form_text_20">Адрес местоположения объекта</label>
+                                <input type="text" class="inputtext" name="address" placeholder="ул Ленина дом 5" value="" id="form_text_20" />
+                                <span style="display: none" class="error-fld"
+                                      title="Поле обязательно для заполнения">Введите адрес местоположения объекта</span>
+                            </div>
+
+                            <div class="project-form-field">
+                                <label for="form_text_17">Номер телефона для связи<span>*</span></label>
+                                <input type="text" class="inputtext inputtext__phone phone" name="phone" placeholder="+7 900 000 00 00" value=""
+                                       id="form_text_17" required>
+                                <span style="display: none" class="error-fld"
+                                      title="Поле обязательно для заполнения">Введите номер телефона для связи</span>
+                            </div>
+
+                            <div class="project-form-field">
+                                <label for="form_text_21">Адрес эл.почты<span>*</span></label>
+                                <input type="text" class="inputtext" name="email" placeholder="mypost@yandex.ru" value="" id="form_text_21"
+                                       required>
+                                <span style="display: none" class="error-fld"
+                                      title="Поле обязательно для заполнения">Введите Ваш адрес электронной почты</span>
+                            </div>
+                        </div>
+                        <div class="project-form-group">
+                            <div class="project-form-field">
+                                <label for="form_textarea_22">Опишите, что необходимо сделать</label>
+                                <textarea name="description" cols="40" rows="21" class="inputtextarea" placeholder="Опишите, что необходимо выполнить.&#10;&#10;Пример:&#10;Требуется выполнить расчет помещения:&#10;- второго этажаЖ 210 кухня, 215 - мастерская.&#10;Нормируемое КЕО выполнить согласно СанПиН 1.2.3685-21&#10;На плане освещаемые помещения выделены желтым цветом.&#10;&#10;Здание находится в исторической части города.&#10;&#10;Чертежи АР, АС, ТХ - приложены."
+                                              id="form_textarea_22"></textarea>
+                                <span style="display: none" class="error-fld"
+                                      title="Поле обязательно для заполнения">Опишите, что необходимо сделать</span>
+                            </div>
+<!--
+                            <div class="row project-form-field" style="padding: 0 15px;">
+                                <div class="col btn btn-primary wrap-btn-input">
+                                    <a target="_blank" href="/upload/iblock/5c1/i1e9g8j4qd3w06ej9i3rboyiuczqcypd/oprosnyy-list-solarzhi-_1_.docx" style="color: #fff; text-decoration: none;">Скачать<br />опросный лист</a>
+                                </div>
+                                <div class="col project-form-documents__fields">
+                                    <div class="project-form-documents__group" style="height: 100%;">
+                                         <label style="bottom: 0; top: 7px;">
+                                            <input type="file" name="opros_list" class="project-form-file-selector">
+                                            <span style="line-height: 1.1em;">Прикрепить заполненный опросный лист</span>
+                                         </label>
+                                    </div>
+                                </div>
+                            </div>
+-->
+                        </div>
+                    </div>
+                    
+                    <div class="project-form-group-wrapper">
+                        <div class="project-form-group">
+                            <div class="project-form-documents__title" style="margin-bottom: 0;">
+                                Загрузите файлы, необходимые для рассчета:
+                            </div>
+                            <div class="project-form-documents__fields">
+                                <div class="project-form-documents__group">
+                                    <label class="project-form-document showplus">
+                                        <input type="file" name="plan_floor[]" class="project-form-file-selector" multiple />
+                                        <span>План этажа</span>
+                                    </label>
+                                    <label class="project-form-document showplus">
+                                        <input type="file" name="cut_room[]" class="project-form-file-selector" multiple />
+                                        <span>Разрезы и сечения</span>
+                                    </label>
+                                </div>
+                                <div class="project-form-documents__group">
+                                    <label class="project-form-document showplus">
+                                        <input type="file" name="plan_roof[]" class="project-form-file-selector" multiple />
+                                        <span>План кровли</span>
+                                    </label>
+                                    <label class="project-form-document showplus">
+                                        <input type="file" name="other[]" class="project-form-file-selector" multiple />
+                                        <span>Другие файлы</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="project-form-group">
+                            <div class="project-form-documents__title" style="margin-bottom: 0;">
+                                Выберите способ связи:
+                            </div>
+                            <div class="project-form-documents__fields">
+                                <div class="project-form-documents__group">
+                                    <label class="project-form-document">
+                                        <input type="checkbox" name="connect_whatsapp" class="project-form-check-selector" />
+                                        <span>Whatsapp</span>
+                                    </label>
+                                    <label class="project-form-document">
+                                        <input type="checkbox" name="connect_email" class="project-form-check-selector" />
+                                        <span>E-mail</span>
+                                    </label>
+                                </div>
+                                <div class="project-form-documents__group">
+                                    <label class="project-form-document">
+                                        <input type="checkbox" name="connect_telegram" class="project-form-check-selector" />
+                                        <span>Telegram</span>
+                                    </label>
+                                    <label class="project-form-document">
+                                        <input type="checkbox" name="connect_phone" class="project-form-check-selector" />
+                                        <span>Телефон</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="project-form-group-wrapper">
+                        <div class="project-form-group">
+                            <div class="project-form-documents__title" style="margin-bottom: 0;">
+                                Выберите особенности запроса:
+                            </div>
+                            <div class="project-form-documents__fields">
+                                <div class="project-form-documents__group">
+                                    <label class="project-form-document">
+                                        <input type="radio" name="querytype" class="project-form-radio-selector" value="Перед сдачей в экспертизу" />
+                                        <span>Перед сдачей в экспертизу</span>
+                                    </label>
+                                    <label class="project-form-document">
+                                        <input type="radio" name="querytype" class="project-form-radio-selector" value="Проект после экспертизы" />
+                                        <span>Проект после экспертизы</span>
+                                    </label>
+                                </div>
+                                <div class="project-form-documents__group">
+                                    <label class="project-form-document">
+                                        <input type="radio" name="querytype" class="project-form-radio-selector" value="Расчет КЕО" />
+                                        <span>Расчет КЕО</span>
+                                    </label>
+                                    <label class="project-form-document">
+                                        <input type="radio" name="querytype" class="project-form-radio-selector" value="Подбор системы" />
+                                        <span>Подбор системы</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="project-form-group">
+                            <!--<div class="project-form-documents__title" style="margin-bottom: 0;">&nbsp;</div>-->
+                            <div class="project-form-documents__fields" style="margin-top: 47px;">
+<!--            <p class="project-form-reqinfo"><span>*</span>Обязательные для заполнения поля</p>-->
+                                <div class="project-form-documents__group">
+                                    <div style="position: relative; margin: 0 10px;">
+<?
+$captchaCode = $APPLICATION->CaptchaGetCode();
+?>
+                                        <input type="hidden" name="captcha_sid"
+                                            value="<?= htmlspecialcharsbx($captchaCode); ?>"/>
+                                        <img src="/bitrix/tools/captcha.php?captcha_sid=<?= htmlspecialcharsbx($captchaCode); ?>"
+                                            width="236" height="54" data-size="compact" />
+                                        <label class="project-form-captcha" ~style="flex: 0 0 100%; font-size: 80%;">
+                                            <!--<span style="color: #818181;"><?= GetMessage("FORM_CAPTCHA_FIELD_TITLE") ?><?=CForm::ShowRequired("Y"); ?></span>-->
+                                            <input type="text" name="captcha_word" size="30" maxlength="50" value="" class="inputtext" style="display:block;" />
+                                            <span style="display: none" class="error-fld"
+                                                  title="Поле обязательно для заполнения">Не пройдена капча</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="project-form-documents__group">
+                                    <div style="margin: 0 10px;">
+                                        <div class="btn btn-primary wrap-btn-input project-form__submit project-form-send" style="height: 76px; width: 167px;">
+                                            Отправить запрос
+                                        </div>
+                                        <!--<button type="button" class="btn btn-primary wrap-btn-input project-form__submit project-form-send" style="height: 78px; width: 167px;">Отправить запрос</button>-->
+<!--
+                    <div class="btn btn-primary wrap-btn-input show" style="display: block; margin-top: 0.5em; text-align: left;">
+                        <a href="/documents/" target="_blank" style="color: #fff; text-align: left; text-decoration: none;">Документация</a>
+                    </div>
+-->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="project-form-documents__fields" style="display: block;">
+                                <div class="project-form-documents__group">
+                                    <div style="margin: 0 10px; width: 100%;">
+                                        <p class="policy-msg project-form-policy-msg">
+                                            <input type="checkbox" id="privacy" name="privacy" checked>
+                                            <label for="privacy" style="font-size: 80%;">
+                                                <span>Нажимая кнопку «Отправить запрос» вы соглашаетесь с <a target="_blank" href="/policy/">политикой конфиденциальности сайта</a></span>
+                                            </label>
+                                            <span style="display: none" class="error-fld"
+                                                  title="Поле обязательно для заполнения">Вы не приняли соглашение</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="modal fade" id="project_form_result" tabindex="-1" role="dialog"
+             aria-labelledby="project-form-result">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
+                        <div class="form-body">
+                            <div class="errortext"></div>
+                            Спасибо! Ваша заявка принята!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</section>
+
+<script>
+$('input[id^=form_text_]').keyup(function() {//rsh added
+    if(!$(this).val())
+        $(this).next('label').hide();
+});
+</script>
+
