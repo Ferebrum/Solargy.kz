@@ -49,6 +49,14 @@ Scope: only `https://solargy.kz/application/`.
 - Saved the handler state before this correction in `local-ajax-add_project_form.php.before-config-path-fix` (commit `b22a0e9`).
 - Form wording does not affect Turnstile verification.
 
+## Successful end-to-end test
+
+- The authorized test request passed Turnstile and displayed `Спасибо! Ваша заявка принята!`.
+- Email delivery was confirmed by the user in the mailbox UI.
+- Confirmed mail headers: sender `sales@solargy.kz`, recipient `sales@solargy.group`.
+- The KEO request fields and message layout were populated correctly.
+- The earlier inference based only on the blank `EMAIL_TO` template field was incomplete: runtime mail-event configuration resolves the primary recipient to `sales@solargy.group`.
+
 ## Rollback
 
 1. Restore the two `.before` files to their original live paths.
