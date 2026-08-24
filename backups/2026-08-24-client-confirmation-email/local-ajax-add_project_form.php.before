@@ -1,0 +1,242 @@
+<? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
+$APPLICATION->SetTitle("");?><?
+use Bitrix\Main\Loader;
+use Bitrix\Main\Application;
+use SiteFunctions;
+
+Loader::IncludeModule('main');
+Loader::IncludeModule('iblock');
+
+$isTurnstilePilot = isset($_POST['turnstile_pilot']) && $_POST['turnstile_pilot'] === '1';
+$captcha = false;
+$captchaError = 'Не удалось пройти проверку защиты.';
+
+if ($isTurnstilePilot) {
+    $configFile = $_SERVER['DOCUMENT_ROOT'] . '/bitrix/php_interface/turnstile_config.php/turnstile_config.php';
+    if (is_file($configFile)) {
+        require_once $configFile;
+    }
+
+    $honeypotIsEmpty = empty($_POST['website']);
+    $startedAt = isset($_POST['form_started_at']) ? (int)$_POST['form_started_at'] : 0;
+    $formAge = $startedAt > 0 ? time() - $startedAt : 0;
+    $timingIsValid = $formAge >= 2 && $formAge <= 86400;
+    $sessionIsValid = check_bitrix_sessid();
+    $turnstileToken = isset($_POST['cf-turnstile-response']) ? trim((string)$_POST['cf-turnstile-response']) : '';
+
+    if ($honeypotIsEmpty && $timingIsValid && $sessionIsValid && $turnstileToken !== '' && defined('SOLARGY_TURNSTILE_SECRET_KEY')) {
+        try {
+            $httpClient = new \Bitrix\Main\Web\HttpClient(array(
+                'socketTimeout' => 5,
+                'streamTimeout' => 5,
+            ));
+            $verificationResponse = $httpClient->post(
+                'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+                array(
+                    'secret' => SOLARGY_TURNSTILE_SECRET_KEY,
+                    'response' => $turnstileToken,
+                    'remoteip' => $_SERVER['REMOTE_ADDR'],
+                )
+            );
+            $verificationResult = json_decode($verificationResponse, true);
+            $allowedHostnames = array('solargy.kz', 'www.solargy.kz');
+            $captcha = is_array($verificationResult)
+                && !empty($verificationResult['success'])
+                && in_array((string)$verificationResult['hostname'], $allowedHostnames, true);
+        } catch (\Throwable $exception) {
+            $captcha = false;
+        }
+    }
+} else {
+    $captcha_word = $DB->ForSql(isset($_POST['captcha_word']) ? $_POST['captcha_word'] : '');
+    $captcha_sid = $DB->ForSql(isset($_POST['captcha_sid']) ? $_POST['captcha_sid'] : '');
+    $captcha = $APPLICATION->CaptchaCheckCode($captcha_word, $captcha_sid);
+}
+
+if ($captcha) {
+    //заполнение файлов
+    $FILES_LIST = [];
+    foreach ($_FILES as $key1 => $file1) {
+        foreach ($file1 as $key2 => $file2) {
+            foreach ($file2 as $key3 => $file3) {
+                $FILES_LIST[$key1][$key3][$key2] = $file3;
+            }
+        }
+    }
+
+
+    //отправка с формы изменить личные данные
+    $request = Application::getInstance()->getContext()->getRequest();
+    $value = $request->getPostList();
+
+    if (!empty($value))     {
+        $arResult = $value->toArray();
+
+        if (!empty($arResult)) {
+            if ($isTurnstilePilot) {
+                $requiredFields = array('city', 'organization', 'name', 'phone', 'email');
+                foreach ($requiredFields as $requiredField) {
+                    if (!isset($arResult[$requiredField]) || trim((string)$arResult[$requiredField]) === '') {
+                        echo json_encode(array(
+                            'status' => '0',
+                            'message' => 'Заполните обязательные поля формы',
+                        ));
+                        exit;
+                    }
+                }
+                if (!filter_var($arResult['email'], FILTER_VALIDATE_EMAIL)) {
+                    echo json_encode(array(
+                        'status' => '0',
+                        'message' => 'Укажите корректный адрес электронной почты',
+                    ));
+                    exit;
+                }
+            }
+
+            //ID почтового шаблона
+            $MESSAGE_ID = 20;
+
+            //add request
+            $el = new CIBlockElement;
+
+            //свойства
+            $arProps = [];
+            $arProps['ATT_ORGANIZATION'] = htmlspecialchars($arResult['organization']);
+            $arProps['ATT_CITY'] = htmlspecialchars($arResult["city"]);
+            $arProps['ATT_NAME'] = htmlspecialchars($arResult["name"]);
+            $arProps['ATT_POST'] = htmlspecialchars($arResult["post"]);
+            $arProps['ATT_PHONE'] = htmlspecialchars($arResult["phone"]);
+            $arProps['ATT_EMAIL'] = htmlspecialchars($arResult["email"]);
+            $arProps['ATT_ADDRESS'] = htmlspecialchars($arResult["address"]);
+            $arProps['ATT_DESCRIPTION'] = htmlspecialchars($arResult["description"]);
+
+            $arProps['ATT_CONNECT_WHATSAPP'] = htmlspecialchars($arResult["connect_whatsapp"]);
+            $arProps['ATT_CONNECT_EMAIL'] = htmlspecialchars($arResult["connect_email"]);
+            $arProps['ATT_CONNECT_TELEGRAM'] = htmlspecialchars($arResult["connect_telegram"]);
+            $arProps['ATT_CONNECT_PHONE'] = htmlspecialchars($arResult["connect_phone"]);
+
+            $arProps['ATT_QUERYTYPE'] = htmlspecialchars($arResult["querytype"]);
+
+            $arProps['ATT_OTHER'] = $FILES_LIST['other'];
+            $arProps['ATT_PLAN_ROOF'] = $FILES_LIST['plan_roof'];
+            $arProps['ATT_CUT_ROOM'] = $FILES_LIST['cut_room'];
+            $arProps['ATT_PLAN_FLOOR'] = $FILES_LIST['plan_floor'];
+            $arProps['ATT_OPROS_LIST'] = $FILES_LIST['opros_list'];//rsh added
+            
+            $arProps['ATT_FILES'] = "";//rsh added
+
+
+            //заполнение списка файлов для отправки на почту
+			foreach ($FILES_LIST as $file)
+			{
+			    foreach ($file as $item)
+			    {
+					if (!empty($item['tmp_name'])) {
+						$f = CFile::SaveFile ($item, 'mails');
+                        if($item["size"] > 1024 * 1024 * 20) //20МБ
+                            $arProps['ATT_FILES'] .= '<a href="'."//solargy.kz" . CFile::GetPath($f).'">' . $item["name"] . " (скачать)</a>\n";
+                        else
+                            $arrFiles[] = $f;
+					}
+			    }
+			}
+
+            //сохранить данные в инфоблок
+            $fields = array(
+                "DATE_CREATE" => date("d.m.Y H:i:s"),
+                "CREATED_BY" => $GLOBALS['USER']->GetID(),
+                "IBLOCK_ID" => 18,
+                "NAME" => 'Заявка от '.date("d.m.Y H:i:s"),
+                "ACTIVE" => "Y",
+                "PROPERTY_VALUES" => $arProps,
+            );
+
+            //сохранение в инфоблок
+            if($arProps['ATT_FILES'])
+                $arProps['ATT_FILES'] = "Приложенные файлы большого размера:\n" . $arProps['ATT_FILES'];
+            $connect = (($arProps['ATT_CONNECT_WHATSAPP']) ? "\nWhatsapp" : "") .
+						(($arProps['ATT_CONNECT_EMAIL']) ? "\nE-mail" : "") .
+						(($arProps['ATT_CONNECT_TELEGRAM']) ? "\nTelegram" : "") .
+						(($arProps['ATT_CONNECT_PHONE']) ? "\nтелефон" : "");
+            if(!$connect)
+                $connect = "не указаны";
+            $querytype = $arProps['ATT_QUERYTYPE'];
+            if(!$querytype)
+                $querytype = "не указано";
+            $post = $arProps['ATT_POST'];
+            if(!$post)
+                $post = "не указана";
+            $address = $arProps['ATT_ADDRESS'];
+            if(!$address)
+                $address = "не указан";
+            if ($ID = $el->Add($fields)) {
+                //отправка письма
+                $arEventFields = array(
+                    "NAME" => "Заявка на расчет проекта " . date("d.m.Y") . ' ' . $arProps['ATT_NAME'],
+                    "ATT_CITY" => $arProps['ATT_CITY'],
+                    "ATT_ORGANIZATION" => $arProps['ATT_ORGANIZATION'],
+                    "ATT_NAME" => $arProps['ATT_NAME'],
+                    "ATT_POST" => $post,
+                    "ATT_PHONE" => $arProps['ATT_PHONE'],
+                    "ATT_EMAIL" => $arProps['ATT_EMAIL'],
+                    "ATT_ADDRESS" => $address,
+                    "ATT_DESCRIPTION" => $arProps['ATT_DESCRIPTION'],
+                    "ATT_CONNECT" => $connect,
+                    "ATT_QUERYTYPE" => $querytype,
+                    "ATT_FILES" => $arProps['ATT_FILES'],
+                    "DATE" => date("d.m.Y H:i:s"),
+                    "MESS_ID" => $ID
+                );
+
+
+                //уведомление администратору
+                $mess = CEvent::Send(
+                    "ADD_PROJECT_FORM",
+                    SITE_ID,
+                    $arEventFields,
+					"Y",
+                    $MESSAGE_ID,
+					$arrFiles);
+
+
+                echo json_encode(array(
+                    'status' => '1',
+					'message' => 'Данные успешно отправлены'
+                ));
+
+            } else
+            {
+                echo json_encode(array(
+                    'status' => '0',
+                    'message' => 'Данные не были отправлены на почту'
+                ));
+            }
+        }
+        else
+        {
+            //ошибка запроса на авторизацию
+            echo json_encode(array(
+                'status' => '0',
+                'message' => 'не введены данные',
+            ));
+        }
+    }
+    else
+    {
+        //ошибка запроса на авторизацию
+        echo json_encode(array(
+            'status' => '0',
+			'message' => 'не получены данные',
+
+        ));
+    }
+}
+else
+{
+    //ошибка запроса на авторизацию
+    echo json_encode(array(
+        'status' => '0',
+        'message' => $isTurnstilePilot ? $captchaError : 'не получены данные',
+    ));
+}?>
+<? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_after.php");?>
